@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>Retrofit Switch — Control Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="panel-frame">
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <circle cx="7" cy="7" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6" />
+            <circle cx="17" cy="15" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6" />
+            <path d="M9.8 9 L13.5 12.5" stroke="currentColor" stroke-width="1.6" fill="none" />
+          </svg>
+        </span>
+        <div class="brand-text">
+          <span class="brand-title">RETROFIT SWITCH</span>
+          <span class="brand-sub">Five-Bar Linkage Controller</span>
+        </div>
+      </div>
+      <div class="led-row" id="ledRow">
+        <button class="led" id="ledHome" data-label="HOMED" title="Homing status">
+          <span class="dot"></span><span class="led-label">HOMED</span>
+        </button>
+        <span class="led" id="ledSta" data-label="WiFi">
+          <span class="dot"></span><span class="led-label">WiFi</span>
+        </span>
+        <span class="led" id="ledTime" data-label="TIME">
+          <span class="dot"></span><span class="led-label">TIME</span>
+        </span>
+      </div>
+    </header>
+
+    <nav class="tabbar" id="tabbar">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="switches">Switches</button>
+      <button class="tab-btn" data-tab="schedules">Schedules</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </nav>
+
+    <main class="content">
+
+      <!-- ===================== DASHBOARD ===================== -->
+      <section class="tab-page active" id="page-dashboard">
+        <div class="status-strip" id="statusStrip">
+          <div class="status-item">
+            <span class="status-label">Local time</span>
+            <span class="status-value mono" id="statTime">—</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Position</span>
+            <span class="status-value mono" id="statPos">—</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Network</span>
+            <span class="status-value" id="statNet">—</span>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <h2>Switches</h2>
+          <button class="btn btn-ghost btn-sm" id="btnHomeNow">Home motors</button>
+        </div>
+        <div class="switch-grid" id="dashSwitchGrid">
+          <!-- populated by app.js -->
+        </div>
+      </section>
+
+      <!-- ===================== SWITCHES ===================== -->
+      <section class="tab-page" id="page-switches">
+        <div class="section-head">
+          <h2>Configure switches</h2>
+        </div>
+
+        <div class="obstacle-banner" id="obstacleBanner" style="display:none;">
+          <span id="obstacleBannerText">Obstacle stop latched — a motor has been disabled.</span>
+          <button class="btn btn-primary btn-sm" id="btnResetObstacle">Reset &amp; re-enable</button>
+        </div>
+
+        <div class="card" style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+          <div>
+            <h3 class="card-title" style="margin-bottom:4px;">Manual override</h3>
+            <span class="muted">Set current position as physical zero (bypass obstacle-seek).</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btnForceHome">Force Home</button>
+        </div>
+
+        <div class="card">
+          <div class="card-row">
+            <label for="switchCount">Number of switches</label>
+            <select id="switchCount" class="select"></select>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnSaveSwitchCount">Save</button>
+        </div>
+
+        <div id="switchEditorList"></div>
+      </section>
+
+      <!-- ===================== SCHEDULES ===================== -->
+      <section class="tab-page" id="page-schedules">
+        <div class="section-head">
+          <h2>Schedules</h2>
+        </div>
+
+        <div class="card" id="scheduleList"></div>
+
+        <div class="card">
+          <h3 class="card-title">Add schedule</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label for="schSwitch">Switch</label>
+              <select id="schSwitch" class="select"></select>
+            </div>
+            <div class="field">
+              <label for="schAction">Action</label>
+              <div class="segmented" id="schAction">
+                <button type="button" class="seg-btn active" data-value="on">ON</button>
+                <button type="button" class="seg-btn" data-value="off">OFF</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="schType">Type</label>
+              <select id="schType" class="select">
+                <option value="daily">Daily</option>
+                <option value="days_of_week">Days of week</option>
+                <option value="one_time">One-time</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="schTime">Time</label>
+              <input type="time" id="schTime" class="text-input" value="08:00">
+            </div>
+            <div class="field" id="schDaysField" style="display:none;">
+              <label>Days</label>
+              <div class="day-picker" id="schDays">
+                <button type="button" class="day-btn" data-bit="1">S</button>
+                <button type="button" class="day-btn" data-bit="2">M</button>
+                <button type="button" class="day-btn" data-bit="4">T</button>
+                <button type="button" class="day-btn" data-bit="8">W</button>
+                <button type="button" class="day-btn" data-bit="16">T</button>
+                <button type="button" class="day-btn" data-bit="32">F</button>
+                <button type="button" class="day-btn" data-bit="64">S</button>
+              </div>
+            </div>
+            <div class="field" id="schDateField" style="display:none;">
+              <label for="schDate">Date</label>
+              <input type="date" id="schDate" class="text-input">
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnAddSchedule">Add schedule</button>
+        </div>
+      </section>
+
+      <!-- ===================== SETTINGS ===================== -->
+      <section class="tab-page" id="page-settings">
+        <div class="section-head">
+          <h2>Settings</h2>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">WiFi network (station)</h3>
+          <div class="form-grid">
+            <div class="field"><label for="staSsid">SSID</label><input class="text-input" id="staSsid" type="text">
+            </div>
+            <div class="field"><label for="staPass">Password</label><input class="text-input" id="staPass"
+                type="password"></div>
+          </div>
+          <div class="card-row">
+            <span class="muted" id="staStatus">—</span>
+            <button class="btn btn-primary btn-sm" id="btnConnectSta">Connect</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Access point</h3>
+          <div class="form-grid">
+            <div class="field"><label for="apSsid">SSID</label><input class="text-input" id="apSsid" type="text"></div>
+            <div class="field"><label for="apPass">Password</label><input class="text-input" id="apPass"
+                type="password"></div>
+          </div>
+          <div class="card-row">
+            <span class="muted" id="apStatus">—</span>
+            <button class="btn btn-primary btn-sm" id="btnSaveAp">Save</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Time</h3>
+          <div class="form-grid">
+            <div class="field"><label for="ntpServer">NTP server</label><input class="text-input" id="ntpServer"
+                type="text"></div>
+            <div class="field"><label for="tzInput">Timezone (POSIX)</label><input class="text-input" id="tzInput"
+                type="text"></div>
+          </div>
+          <div class="card-row">
+            <span class="muted mono" id="timeNow">—</span>
+            <button class="btn btn-primary btn-sm" id="btnSaveTime">Save</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">System</h3>
+          <div class="card-row">
+            <span class="muted">Firmware</span>
+            <span class="mono">retrofit-switch v1.0.0</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btnHomeSystem">Home motors</button>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
