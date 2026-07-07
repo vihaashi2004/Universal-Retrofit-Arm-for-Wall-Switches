@@ -2,7 +2,7 @@
 
 **A little robot arm that flips your wall switches for you.**
 
-No rewiring. No replacing your switches with "smart" ones. Just a small arm that sits over your existing switch plate, learns where each switch is, and presses it on command — from your phone, or on a schedule you set.
+No rewiring. No replacing your switches with "smart" ones. Just a small device that sits over your existing switch plate, learns where each switch is, and presses it on command — from your phone, or on a schedule you set.
 
 Think of it as teaching a robot finger to do what your finger does, except it never forgets to turn the lights off.
 
